@@ -1,24 +1,44 @@
 <?php
 
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Event;
+namespace App\Providers;
+
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
 
-function boot(): void
+class AppServiceProvider extends ServiceProvider
 {
-    Event::listen(Login::class, function ($event) {
-        Log::channel('audit')->info("Usuario se autenticó: {$event->user->email}");
-    });
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
 
-    Event::listen(Logout::class, function ($event) {
-        Log::channel('audit')->info("Usuario cerró sesión: {$event->user->email}");
-    });
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Event::listen(Login::class, function ($event) {
+            Log::channel('audit')->info("Usuario se autenticó: {$event->user->email}");
+        });
 
-    RateLimiter::for('login', function (Request $request) {
-        return Limit::perMinute(5)->by($request->email . $request->ip());
-    });
+        Event::listen(Logout::class, function ($event) {
+            Log::channel('audit')->info("Usuario cerró sesión: {$event->user->email}");
+        });
+
+        RateLimiter::for('login', function (Request $request) {
+            $identifier = $request->input('login') ?? $request->ip();
+
+            return Limit::perMinute(5)->by($identifier . '|' . $request->ip());
+        });
+    }
 }
