@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEPA | Inicio</title>
+    <title>SEPA | HOLASSS</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-sans text-gray-800 flex flex-col min-h-screen relative bg-slate-900">
@@ -20,7 +20,7 @@
             <div class="flex items-center space-x-3">
                 <span class="text-xl font-bold tracking-wide">S.E.P.A.</span>
             </div>
-            
+
             <div class="flex items-center space-x-4">
     <button type="button" onclick="window.location.href='{{ route('login') }}'" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition">
         Iniciar sesión
@@ -35,7 +35,7 @@
     <!-- Contenido Principal -->
     <main class="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
         <div class="max-w-3xl w-full text-center space-y-8 bg-white/90 backdrop-blur-md p-10 rounded-2xl shadow-2xl border border-white/20">
-            
+
             <div class="space-y-4">
                 <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-700 bg-blue-100 rounded-full">
                     Plataforma de Comercio Exterior
