@@ -120,5 +120,3 @@ El proyecto se encuentra en desarrollo activo. Se irán incorporando nuevas func
 ## Licencia
 
 Este proyecto se distribuye con fines académicos y educativos.
-
-NO, NO, NO COMIDA CHINA 50 PESO
