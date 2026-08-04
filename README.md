@@ -57,11 +57,13 @@ cd S-E-P-A
 ### 2. Crear la base de datos
 
 ```sql
-CREATE DATABASE "Nombre de la DB";
-CREATE USER 'nombre del usuario'@'host del usuario' IDENTIFIED BY 'contraceña para el usuario';
-GRANT ALL PRIVILEGES ON simulador_cove.* TO 'nombre del usuario'@'host del usuario';
+CREATE DATABASE DB_Ejemplo;
+CREATE USER 'Usuario_Ejemplo'@'%' IDENTIFIED BY 'Password_Ejemplo';
+GRANT ALL PRIVILEGES ON DB_Ejemplo.* TO 'Usuario_Ejemplo'@'localhost';
 FLUSH PRIVILEGES;
 ```
+
+> ***Nota : Esta configuracion es para trabajar en local***
 
 ### 3. Configurar variables de entorno
 
@@ -75,9 +77,9 @@ Edita el archivo `.env` y configura la conexión a la base de datos:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE="Nombre de la DB"
-DB_USERNAME="Nombre del usuario de la DB"
-DB_PASSWORD="Contraseña del usuario"
+DB_DATABASE=DB_Ejemplo
+DB_USERNAME=Usuario_Ejemplo
+DB_PASSWORD=Password_Ejemplo
 ```
 
 ### 4. Instalar dependencias
