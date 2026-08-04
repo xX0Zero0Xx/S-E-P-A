@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración | WebPedimentos</title>
+    <title>Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-sans text-gray-800 flex flex-col min-h-screen relative bg-slate-900">
@@ -62,7 +62,7 @@
         </div>
     </main>
     <footer class="bg-slate-900/80 backdrop-blur-md text-gray-400 py-4 text-center text-sm border-t border-slate-800 relative z-10">
-        <p>&copy; {{ date('Y') }} WebPedimentos. Todos los derechos reservados.</p>
+        <p>&copy; {{ date('Y') }}S-E-P-A - Todos los derechos reservados.</p>
     </footer>
 </body>
 </html>

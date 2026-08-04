@@ -29,3 +29,13 @@ Route::middleware(['auth', CheckRol::class . ':capturista'])->prefix('capturista
 });
 
 require __DIR__.'/auth.php';
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/captura', function () {
+        return view('capturista.panel.captura');
+    })->name('captura');
+});
+
+use App\Http\Controllers\PedimentoController;
+
+Route::post('/pedimentos', [PedimentoController::class, 'store'])->name('pedimentos.store');

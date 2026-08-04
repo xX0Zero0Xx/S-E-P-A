@@ -51,7 +51,7 @@
         </div>
     </main>
     <footer class="bg-slate-900/80 backdrop-blur-md text-gray-400 py-4 text-center text-sm border-t border-slate-800 relative z-10">
-        <p>&copy; {{ date('Y') }} WebPedimentos. Todos los derechos reservados.</p>
+        <p>&copy; {{ date('Y') }} S-E-P-A - Todos los derechos reservados.</p>
     </footer>
 </body>
 </html>

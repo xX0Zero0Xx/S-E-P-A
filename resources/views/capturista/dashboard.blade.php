@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Captura | WebPedimentos</title>
+    <title>SEPA | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-sans text-gray-800 flex flex-col min-h-screen relative bg-slate-900">
@@ -49,9 +49,9 @@
                     <p class="text-sm text-gray-600 mt-2">Ingresa datos de importación o exportación, partidas y contribuciones.</p>
                 </div>
                 <div>
-                    <button type="button" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm shadow transition">
+                    <a href="{{ route('captura') }}" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm shadow transition">
                         Iniciar Captura
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
         </div>
     </main>
     <footer class="bg-slate-900/80 backdrop-blur-md text-gray-400 py-4 text-center text-sm border-t border-slate-800 relative z-10">
-        <p>&copy; {{ date('Y') }} WebPedimentos. Todos los derechos reservados.</p>
+        <p>&copy; {{ date('Y') }} S-E-P-A - Todos los derechos reservados.</p>
     </footer>
 </body>
 </html>
