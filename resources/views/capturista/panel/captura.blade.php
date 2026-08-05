@@ -33,7 +33,7 @@
                 <span class="text-xl font-bold tracking-wide text-blue-400">S.E.P.A.</span>
                 <span class="text-xs bg-blue-600 text-white px-2.5 py-0.5 rounded-full font-semibold uppercase">Captura por Pestañas</span>
             </div>
-            
+
             <div class="flex items-center space-x-4">
                 <!-- listado de mis pedimentos capturados por el usuario -->
                 <a href="{{ route('pedimentos.index') }}" class="px-3.5 py-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-sm">
@@ -54,7 +54,7 @@
 
     <!-- Contenido Principal -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-6">
-        
+
         <!-- Tarjeta de Bienvenida -->
         <div class="bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-white/20">
             <h1 class="text-2xl font-bold text-slate-900">Módulo 3.1: Captura de Pedimento Aduanal</h1>
@@ -63,7 +63,7 @@
 
         <!-- Formulario por Pestañas -->
         <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
-            
+
             <!-- Encabezado de Pestañas -->
             <div class="border-b border-gray-200 bg-gray-50 flex overflow-x-auto">
                 <button type="button" id="btn-tab-1" onclick="cambiarPestana(1)" class="tab-btn px-6 py-4 border-b-2 font-bold text-sm border-blue-600 text-blue-600 bg-blue-50 focus:outline-none transition whitespace-nowrap">
@@ -156,6 +156,10 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Número Factura</label>
                             <input type="text" name="numero_factura" maxlength="30" placeholder="FAC-2026-99" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">País</label>
+                            <input type="text" name="pais" maxlength="100" placeholder="México" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                     </div>
 

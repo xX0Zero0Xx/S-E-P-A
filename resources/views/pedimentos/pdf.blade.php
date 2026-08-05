@@ -121,6 +121,9 @@
             <tr>
                 <td colspan="4"><strong>DOMICILIO:</strong> {{ $pedimento->domicilio ?? 'N/A' }}</td>
             </tr>
+            <tr>
+                <td colspan="4"><strong>PAIS:</strong> {{ $pedimento->pais ?? 'N/A' }}</td>
+            </tr>
         </table>
 
         <div class="section-title">VALORES Y TASAS</div>
