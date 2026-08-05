@@ -3,13 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedimento;
+use App\Services\CalculoPedimentoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PedimentoController extends Controller
 {
+    protected CalculoPedimentoService $calculoService;
+
+    public function __construct(CalculoPedimentoService $calculoService)
+    {
+        $this->calculoService = $calculoService;
+    }
+
     /**
-     * Almacena un nuevo pedimento en la base de datos.
+     * Almacena un nuevo pedimento en la base de datos calculando impuestos automáticamente.
      */
     public function store(Request $request)
     {
@@ -96,9 +104,20 @@ class PedimentoController extends Controller
         // Asignar obligatoriamente el ID del usuario autenticado
         $validatedData['user_id'] = Auth::id();
 
+        // Servicio perrón para calcular totales e impuestos automáticos si hay datos comerciales
+        if (!empty($validatedData['valor_comercial'])) {
+            $calculos = $this->calculoService->calcularTotales($validatedData);
+            $validatedData['valor_dolares'] = $validatedData['valor_dolares'] ?? $calculos['valor_dolares'];
+            $validatedData['valor_aduana'] = $validatedData['valor_aduana'] ?? $calculos['valor_aduana'];
+            $validatedData['precio_pagado'] = $validatedData['precio_pagado'] ?? $calculos['precio_pagado'];
+            $validatedData['importe_contribucion'] = $validatedData['importe_contribucion'] ?? $calculos['importe_contribucion'];
+            $validatedData['efectivo'] = $validatedData['efectivo'] ?? $calculos['efectivo'];
+            $validatedData['total_general'] = $validatedData['total_general'] ?? $calculos['total_general'];
+        }
+
         // chingadera para controlar la insercion en la DB
         Pedimento::create($validatedData);
 
-        return redirect()->back()->with('success', 'Pedimento registrado correctamente.');
+        return redirect()->back()->with('success', 'Pedimento registrado y calculado correctamente.');
     }
 }

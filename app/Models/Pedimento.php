@@ -85,6 +85,9 @@ class Pedimento extends Model
         'efectivo',
         'otros_totales',
         'total_general',
+
+        // Estatus del flujo de simulación aduanal (Borrador, Validado, Pagado, Despachado)
+        'estatus_simulacion',
     ];
 
     /**
