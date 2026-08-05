@@ -13,6 +13,11 @@ class PedimentoController extends Controller
      */
     public function store(Request $request)
     {
+        // Control de acceso: Verificar que el usuario tenga sesión activa
+        if (!Auth::check()) {
+            abort(403, 'Acceso no autorizado.');
+        }
+
         $validatedData = $request->validate([
             'numero_pedimento' => 'required|string|max:15|unique:pedimentos,numero_pedimento',
             'tipo_operacion' => 'nullable|integer',
@@ -88,9 +93,10 @@ class PedimentoController extends Controller
             'total_general' => 'nullable|numeric',
         ]);
 
-        // Asignar el ID del usuario autenticado si aplica
+        // Asignar obligatoriamente el ID del usuario autenticado
         $validatedData['user_id'] = Auth::id();
 
+        // chingadera para controlar la insercion en la DB
         Pedimento::create($validatedData);
 
         return redirect()->back()->with('success', 'Pedimento registrado correctamente.');

@@ -63,7 +63,7 @@ GRANT ALL PRIVILEGES ON DB_Ejemplo.* TO 'Usuario_Ejemplo'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-> ***Nota : Esta configuracion es para trabajar en local***
+> **_Nota : Esta configuracion es para trabajar en local_**
 
 ### 3. Configurar variables de entorno
 
