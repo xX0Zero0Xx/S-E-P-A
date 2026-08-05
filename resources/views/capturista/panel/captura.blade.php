@@ -3,29 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEPA | Captura</title>
+    <title>SEPA | Captura de Pedimento</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // vista perrona de captura por pestañas
+        function cambiarPestana(index) {
+            document.querySelectorAll('.pestana-contenido').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-blue-600', 'text-blue-600', 'bg-blue-50');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            document.getElementById('pestana-' + index).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-tab-' + index);
+            activeBtn.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50');
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+        }
+    </script>
 </head>
 <body class="font-sans text-gray-800 flex flex-col min-h-screen relative bg-slate-900">
 
-    <img src="{{ asset('css/Fondo.jpg') }}" alt="Fondo" class="fixed inset-0 w-full h-full object-cover z-0">
-    <div class="fixed inset-0 bg-black/50 z-0"></div>
+    <img src="{{ asset('css/Fondo.jpg') }}" alt="Fondo" class="fixed inset-0 w-full h-full object-cover z-0 opacity-20">
+    <div class="fixed inset-0 bg-black/60 z-0"></div>
 
     <!-- Navegación superior -->
-    <header class="bg-slate-900/80 backdrop-blur-md text-white shadow-md relative z-10 border-b border-slate-700/50">
+    <header class="bg-slate-900/90 backdrop-blur-md text-white shadow-md relative z-10 border-b border-slate-700/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <span class="text-xl font-bold tracking-wide">S.E.P.A.</span>
-                <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-semibold uppercase">Capturista</span>
+                <span class="text-xl font-bold tracking-wide text-blue-400">S.E.P.A.</span>
+                <span class="text-xs bg-blue-600 text-white px-2.5 py-0.5 rounded-full font-semibold uppercase">Captura por Pestañas</span>
             </div>
             
             <div class="flex items-center space-x-4">
-                <a href="{{ route('capturista.dashboard') }}" class="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-sm">
-                    Volver al Dashboard
+                <!-- listado de mis pedimentos capturados por el usuario -->
+                <a href="{{ route('pedimentos.index') }}" class="px-3.5 py-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-sm">
+                    Mis Pedimentos
+                </a>
+                <a href="{{ route('capturista.dashboard') }}" class="px-3.5 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition shadow-sm">
+                    Dashboard
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="px-3 py-1.5 text-xs font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg transition shadow-sm">
+                    <button type="submit" class="px-3.5 py-1.5 text-xs font-medium bg-red-600 hover:bg-red-700 text-white rounded-xl transition shadow-sm">
                         Cerrar sesión
                     </button>
                 </form>
@@ -38,323 +57,220 @@
         
         <!-- Tarjeta de Bienvenida -->
         <div class="bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-white/20">
-            <h1 class="text-2xl font-bold text-slate-900">Módulo de Captura</h1>
-            <p class="text-sm text-gray-600">Área de trabajo para la generación y consulta de pedimentos aduanales.</p>
+            <h1 class="text-2xl font-bold text-slate-900">Módulo 3.1: Captura de Pedimento Aduanal</h1>
+            <p class="text-sm text-gray-600">Completa la información organizada en pestañas para realizar el cálculo e inserción automática.</p>
         </div>
 
-        <!-- Formulario de Captura de Pedimento -->
-        <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-6 md:p-8">
-            <h2 class="text-xl font-bold text-slate-900 mb-6 border-b pb-3 border-gray-200">Captura de Pedimento</h2>
+        <!-- Formulario por Pestañas -->
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+            
+            <!-- Encabezado de Pestañas -->
+            <div class="border-b border-gray-200 bg-gray-50 flex overflow-x-auto">
+                <button type="button" id="btn-tab-1" onclick="cambiarPestana(1)" class="tab-btn px-6 py-4 border-b-2 font-bold text-sm border-blue-600 text-blue-600 bg-blue-50 focus:outline-none transition whitespace-nowrap">
+                    1. Encabezado & Aduana
+                </button>
+                <button type="button" id="btn-tab-2" onclick="cambiarPestana(2)" class="tab-btn px-6 py-4 border-b-2 font-bold text-sm border-transparent text-gray-500 hover:text-blue-600 focus:outline-none transition whitespace-nowrap">
+                    2. Importador & Proveedor
+                </button>
+                <button type="button" id="btn-tab-3" onclick="cambiarPestana(3)" class="tab-btn px-6 py-4 border-b-2 font-bold text-sm border-transparent text-gray-500 hover:text-blue-600 focus:outline-none transition whitespace-nowrap">
+                    3. Valores & Comercial
+                </button>
+                <button type="button" id="btn-tab-4" onclick="cambiarPestana(4)" class="tab-btn px-6 py-4 border-b-2 font-bold text-sm border-transparent text-gray-500 hover:text-blue-600 focus:outline-none transition whitespace-nowrap">
+                    4. Mercancías
+                </button>
+                <button type="button" id="btn-tab-5" onclick="cambiarPestana(5)" class="tab-btn px-6 py-4 border-b-2 font-bold text-sm border-transparent text-gray-500 hover:text-blue-600 focus:outline-none transition whitespace-nowrap">
+                    5. Liquidación & Impuestos
+                </button>
+            </div>
 
-            <form action="{{ route('pedimentos.store') }}" method="POST" class="space-y-8">
+            <!-- Formulario Principal -->
+            <form action="{{ route('pedimentos.store') }}" method="POST" class="p-6 md:p-8 space-y-6">
                 @csrf
 
-                <!-- Generalidades -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">1. Datos Generales</h3>
+                <!-- Pestaña 1: Encabezado -->
+                <div id="pestana-1" class="pestana-contenido space-y-6">
+                    <h3 class="text-base font-bold text-slate-800 uppercase border-b pb-2">Datos de Encabezado y Aduana (Anexo 22)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Número de Pedimento *</label>
-                            <input type="text" name="numero_pedimento" maxlength="15" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Número de Pedimento *</label>
+                            <input type="text" name="numero_pedimento" maxlength="15" required placeholder="Ej. 24 47 3820 4001234" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-3 border">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Tipo Operación</label>
-                            <input type="number" name="tipo_operacion" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Tipo Transporte</label>
-                            <input type="number" name="tipo_transporte" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Clave Pedimento</label>
-                            <input type="text" name="clave_pedimento" maxlength="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Aduana y Régimen -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">2. Aduana y Régimen</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Clave Aduana</label>
-                            <input type="text" name="clave_aduana" maxlength="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Sección Aduanera</label>
-                            <input type="text" name="seccion_aduanera" maxlength="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Denominación Aduana</label>
-                            <input type="text" name="denominacion_aduana" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Clave Régimen</label>
-                            <input type="text" name="clave_regimen" maxlength="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700">Descripción Régimen</label>
-                            <input type="text" name="descripcion_regimen" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Destino</label>
-                            <input type="text" name="destino" maxlength="150" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Clave Destino</label>
-                            <input type="text" name="destino_clave" maxlength="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Importador / Exportador -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">3. Importador / Exportador</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Clave País</label>
-                            <input type="text" name="clave_pais" maxlength="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Nombre País</label>
-                            <input type="text" name="nombre_pais" maxlength="80" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">RFC Importador</label>
-                            <input type="text" name="rfc_importador" maxlength="13" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">CURP</label>
-                            <input type="text" name="curp" maxlength="18" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700">Razón Social</label>
-                            <input type="text" name="razon_social" maxlength="150" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700">Domicilio</label>
-                            <input type="text" name="domicilio" maxlength="250" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Valores e Incrementables -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">4. Valores e Incrementables</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Val. Seguros</label>
-                            <input type="number" step="0.01" name="val_seguros" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Seguros</label>
-                            <input type="number" step="0.01" name="seguros" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Fletes</label>
-                            <input type="number" step="0.01" name="fletes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Embalajes</label>
-                            <input type="number" step="0.01" name="embalajes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Otros Incrementables</label>
-                            <input type="number" step="0.01" name="otros_incrementables" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Datos del Pedimento y Fechas -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">5. Datos Generales del Pedimento y Fechas</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Acuse Electrónico</label>
-                            <input type="text" name="acuse_electronico" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Fecha Entrada</label>
-                            <input type="date" name="fecha_entrada" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Fecha Pago</label>
-                            <input type="date" name="fecha_pago" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Fecha Emisión</label>
-                            <input type="date" name="fecha_emision" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Tasa Pedimento</label>
-                            <input type="text" name="tasa_pedimento" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Tipo Cambio</label>
-                            <input type="number" step="0.00001" name="tipo_cambio" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Peso Bruto</label>
-                            <input type="number" step="0.01" name="peso_bruto" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Valor Dólares</label>
-                            <input type="number" step="0.01" name="valor_dolares" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Valor Aduana</label>
-                            <input type="number" step="0.01" name="valor_aduana" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Precio Pagado</label>
-                            <input type="number" step="0.01" name="precio_pagado" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700">Marcas / Bultos</label>
-                            <input type="text" name="marcas_bultos" maxlength="200" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Datos Factura y Proveedor -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">6. Factura y Proveedor</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Número Factura</label>
-                            <input type="text" name="numero_factura" maxlength="30" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Fecha Factura</label>
-                            <input type="date" name="fecha_factura" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Proveedor</label>
-                            <input type="text" name="proveedor" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Valor Comercial</label>
-                            <input type="number" step="0.01" name="valor_comercial" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Moneda</label>
-                            <input type="text" name="moneda" maxlength="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Estatus Pago</label>
-                            <select name="estatus_pago" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border bg-white">
-                                <option value="Adeudo">Adeudo</option>
-                                <option value="Liquidado">Liquidado</option>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Clave Aduana</label>
+                            <select name="clave_aduana" class="w-full rounded-xl border-gray-300 shadow-sm text-sm p-3 border bg-white">
+                                <option value="240">240 - Manzanillo, Colima</option>
+                                <option value="430">430 - Veracruz, Veracruz</option>
+                                <option value="470">470 - AICM (CDMX)</option>
+                                <option value="270">270 - Nuevo Laredo</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Tipo Factura</label>
-                            <input type="text" name="tipo_factura" maxlength="20" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Clave Pedimento</label>
+                            <select name="clave_pedimento" class="w-full rounded-xl border-gray-300 shadow-sm text-sm p-3 border bg-white">
+                                <option value="A1">A1 - Importación / Exportación Definitiva</option>
+                                <option value="IN">IN - Importación Temporal IMMEX</option>
+                                <option value="V1">V1 - Transferencia Virtual</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">País Proveedor</label>
-                            <input type="text" name="pais_proveedor" maxlength="80" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Clave Régimen</label>
+                            <select name="clave_regimen" class="w-full rounded-xl border-gray-300 shadow-sm text-sm p-3 border bg-white">
+                                <option value="IMD">IMD - Definitivo de Importación</option>
+                                <option value="EXD">EXD - Definitivo de Exportación</option>
+                                <option value="ITR">ITR - Temporal de Importación</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t border-gray-100">
+                        <button type="button" onclick="cambiarPestana(2)" class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition text-sm">
+                            Siguiente ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pestaña 2: Importador & Proveedor -->
+                <div id="pestana-2" class="pestana-contenido space-y-6 hidden">
+                    <h3 class="text-base font-bold text-slate-800 uppercase border-b pb-2">Importador / Exportador y Proveedor</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">RFC Importador</label>
+                            <input type="text" name="rfc_importador" maxlength="13" placeholder="GOMX900101XXX" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700">Dirección Proveedor</label>
-                            <input type="text" name="direccion_proveedor" maxlength="200" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Razón Social Importador</label>
+                            <input type="text" name="razon_social" maxlength="150" placeholder="Comercializadora Aduanal S.A. de C.V." class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Ciudad Proveedor</label>
-                            <input type="text" name="ciudad_proveedor" maxlength="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">CURP</label>
+                            <input type="text" name="curp" maxlength="18" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Domicilio Fiscal</label>
+                            <input type="text" name="domicilio" maxlength="250" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Nombre Proveedor</label>
+                            <input type="text" name="proveedor" maxlength="100" placeholder="Global Logistics Corp" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Número Factura</label>
+                            <input type="text" name="numero_factura" maxlength="30" placeholder="FAC-2026-99" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                     </div>
-                </section>
 
-                <!-- Datos de la Mercancía -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">7. Datos de la Mercancía</h3>
+                    <div class="flex justify-between pt-4 border-t border-gray-100">
+                        <button type="button" onclick="cambiarPestana(1)" class="px-5 py-2.5 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition text-sm">
+                            ⬅️ Anterior
+                        </button>
+                        <button type="button" onclick="cambiarPestana(3)" class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition text-sm">
+                            Siguiente ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pestaña 3: Valores & Comercial -->
+                <div id="pestana-3" class="pestana-contenido space-y-6 hidden">
+                    <h3 class="text-base font-bold text-slate-800 uppercase border-b pb-2">Valores Comerciales e Incrementables</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Valor Comercial (Moneda Extranjera)</label>
+                            <input type="number" step="0.01" name="valor_comercial" placeholder="10000.00" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Moneda</label>
+                            <select name="moneda" class="w-full rounded-xl border-gray-300 text-sm p-3 border bg-white">
+                                <option value="USD">USD - Dólar Estadounidense</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="MXN">MXN - Peso Mexicano</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Tipo de Cambio</label>
+                            <input type="number" step="0.0001" name="tipo_cambio" value="20.5000" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Fletes ($)</label>
+                            <input type="number" step="0.01" name="fletes" placeholder="500.00" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Seguros ($)</label>
+                            <input type="number" step="0.01" name="seguros" placeholder="150.00" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Embalajes ($)</label>
+                            <input type="number" step="0.01" name="embalajes" placeholder="50.00" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between pt-4 border-t border-gray-100">
+                        <button type="button" onclick="cambiarPestana(2)" class="px-5 py-2.5 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition text-sm">
+                            ⬅️ Anterior
+                        </button>
+                        <button type="button" onclick="cambiarPestana(4)" class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition text-sm">
+                            Siguiente ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pestaña 4: Mercancías -->
+                <div id="pestana-4" class="pestana-contenido space-y-6 hidden">
+                    <h3 class="text-base font-bold text-slate-800 uppercase border-b pb-2">Descripción de Mercancías</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div class="md:col-span-4">
-                            <label class="block text-xs font-medium text-gray-700">Descripción Mercancía</label>
-                            <input type="text" name="descripcion_mercancia" maxlength="250" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Descripción de la Mercancía</label>
+                            <input type="text" name="descripcion_mercancia" maxlength="250" placeholder="Componentes electrónicos / Maquinaria industrial" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Cantidad</label>
-                            <input type="number" name="cantidad" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Cantidad</label>
+                            <input type="number" name="cantidad" placeholder="100" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Precio Unitario</label>
-                            <input type="number" step="0.01" name="precio_unitario" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Precio Unitario</label>
+                            <input type="number" step="0.01" name="precio_unitario" placeholder="100.00" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Importe Total</label>
-                            <input type="number" step="0.01" name="importe_total" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Peso Bruto (KG)</label>
+                            <input type="number" step="0.01" name="peso_bruto" placeholder="450.50" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                     </div>
-                </section>
 
-                <!-- Transportes -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">8. Transportes</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Transporte Entrada / Salida</label>
-                            <input type="number" name="transporte_entrada_salida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Transporte Arribo</label>
-                            <input type="number" name="transporte_arribo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Transporte Salida</label>
-                            <input type="number" name="transporte_salida" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
+                    <div class="flex justify-between pt-4 border-t border-gray-100">
+                        <button type="button" onclick="cambiarPestana(3)" class="px-5 py-2.5 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition text-sm">
+                            ⬅️ Anterior
+                        </button>
+                        <button type="button" onclick="cambiarPestana(5)" class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition text-sm">
+                            Siguiente ➡️
+                        </button>
                     </div>
-                </section>
-
-                <!-- Contribuciones y Totales -->
-                <section>
-                    <h3 class="text-base font-semibold text-blue-800 mb-4 uppercase tracking-wider">9. Contribuciones y Totales</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Contribución</label>
-                            <input type="text" name="contribucion" maxlength="50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">FP (Forma Pago)</label>
-                            <input type="text" name="fp" maxlength="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Importe Contribución</label>
-                            <input type="number" step="0.01" name="importe_contribucion" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Efectivo</label>
-                            <input type="number" step="0.01" name="efectivo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Otros Totales</label>
-                            <input type="number" step="0.01" name="otros_totales" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700">Total General</label>
-                            <input type="number" step="0.01" name="total_general" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 border">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Botones de Acción -->
-                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
-                    <button type="reset" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
-                        Limpiar Formulario
-                    </button>
-                    <button type="submit" class="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition shadow-md">
-                        Guardar Pedimento
-                    </button>
                 </div>
+
+                <!-- Pestaña 5: Liquidación -->
+                <div id="pestana-5" class="pestana-contenido space-y-6 hidden">
+                    <h3 class="text-base font-bold text-slate-800 uppercase border-b pb-2">Finalización & Liquidación</h3>
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900">
+                        💡 <strong>Nota del Simulador:</strong> Al guardar el pedimento, la plataforma calculará automáticamente el <strong>Valor en Aduana (MXN)</strong>, el <strong>DTA</strong>, el <strong>IGI</strong> y el <strong>IVA (16%)</strong>.
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <!-- chingadera para controlar la insercion en la DB -->
+                    <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+                        <button type="button" onclick="cambiarPestana(4)" class="px-5 py-2.5 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition text-sm">
+                            ⬅️ Anterior
+                        </button>
+                        <button type="submit" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition text-base">
+                            💾 Guardar y Calcular Pedimento
+                        </button>
+                    </div>
+                </div>
+
             </form>
         </div>
 
     </main>
 
-    <footer class="bg-slate-900/80 backdrop-blur-md text-gray-400 py-4 text-center text-sm border-t border-slate-800 relative z-10">
-        <p>&copy; {{ date('Y') }} S-E-P-A - Todos los derechos reservados.</p>
+    <footer class="bg-slate-900/90 backdrop-blur-md text-gray-400 py-4 text-center text-sm border-t border-slate-800 relative z-10">
+        <p>&copy; {{ date('Y') }} S-E-P-A - Módulo de Capturista.</p>
     </footer>
 </body>
 </html>

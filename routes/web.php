@@ -31,7 +31,7 @@ Route::middleware(['auth', CheckRol::class . ':capturista'])->prefix('capturista
 use App\Http\Controllers\PedimentoController;
 
 // ruta para el login y archivos de autenticación del sistema
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // Rutas protegidas para capturistas (requiere autenticación y verificación)
 Route::middleware(['auth', 'verified', CheckRol::class . ':capturista'])->group(function () {
@@ -41,4 +41,10 @@ Route::middleware(['auth', 'verified', CheckRol::class . ':capturista'])->group(
 
     // chingadera para controlar la insercion en la DB (Ruta protegida para almacenar pedimentos)
     Route::post('/pedimentos', [PedimentoController::class, 'store'])->name('pedimentos.store');
+});
+
+Route::middleware(['auth', 'verified', CheckRol::class . ':capturista'])->group(function () {
+    Route::get('/pedimentos', [PedimentoController::class, 'index'])->name('pedimentos.index');
+    Route::get('/pedimentos/{id}', [PedimentoController::class, 'show'])->name('pedimentos.show');
+    Route::get('/pedimentos/{id}/pdf', [PedimentoController::class, 'pdf'])->name('pedimentos.pdf');
 });

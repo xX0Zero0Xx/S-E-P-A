@@ -62,9 +62,9 @@
                     <p class="text-sm text-gray-600 mt-2">Revisa el historial de registros realizados y sus estatus.</p>
                 </div>
                 <div>
-                    <button type="button" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-lg text-sm shadow transition">
+                    <a href="{{ route('pedimentos.index') }}" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-100 text-white font-medium rounded-lg text-sm shadow transition">
                         Ver Historial
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

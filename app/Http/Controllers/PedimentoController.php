@@ -31,7 +31,7 @@ class PedimentoController extends Controller
             'tipo_operacion' => 'nullable|integer',
             'tipo_transporte' => 'nullable|integer',
             'clave_pedimento' => 'nullable|string|max:2',
-            
+
             // Datos de Aduana y Régimen
             'clave_aduana' => 'nullable|string|max:3',
             'seccion_aduanera' => 'nullable|string|max:1',
@@ -114,10 +114,70 @@ class PedimentoController extends Controller
             $validatedData['efectivo'] = $validatedData['efectivo'] ?? $calculos['efectivo'];
             $validatedData['total_general'] = $validatedData['total_general'] ?? $calculos['total_general'];
         }
-
         // chingadera para controlar la insercion en la DB
-        Pedimento::create($validatedData);
+        $pedimento = Pedimento::create($validatedData);
 
-        return redirect()->back()->with('success', 'Pedimento registrado y calculado correctamente.');
+        return redirect()->route('pedimentos.index')->with('success', 'Pedimento registrado y calculado correctamente con folio ' . $pedimento->numero_pedimento);
+    }
+
+    /**
+     * listado de mis pedimentos capturados por el usuario
+     */
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(403);
+        }
+
+        // Si es admin ve todos, si es capturista ve solo sus pedimentos
+        $query = Pedimento::query();
+        if ($user->rol !== 'administrador') {
+            $query->where('user_id', $user->id);
+        }
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->input('buscar');
+            $query->where(function ($q) use ($buscar) {
+                $q->where('numero_pedimento', 'like', "%{$buscar}%")
+                    ->orWhere('rfc_importador', 'like', "%{$buscar}%")
+                    ->orWhere('razon_social', 'like', "%{$buscar}%");
+            });
+        }
+
+        $pedimentos = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        return view('capturista.pedimentos.index', compact('pedimentos'));
+    }
+
+    /**
+     * Muestra el detalle de un pedimento
+     */
+    public function show(int $id)
+    {
+        $pedimento = Pedimento::findOrFail($id);
+
+        $user = Auth::user();
+        if ($user && $user->rol !== 'administrador' && $pedimento->user_id !== $user->id) {
+            abort(403, 'No tienes permiso para ver este pedimento.');
+        }
+
+        return view('capturista.pedimentos.show', compact('pedimento'));
+    }
+
+    /**
+     * chingadera para generar la vista imprimible en PDF del pedimento M3
+     */
+    public function pdf(int $id)
+    {
+        $pedimento = Pedimento::findOrFail($id);
+
+        $user = Auth::user();
+        if ($user && $user->rol !== 'administrador' && $pedimento->user_id !== $user->id) {
+            abort(403, 'No tienes permiso para ver este pedimento.');
+        }
+
+        // Vista perrona de pedimento en formato aduanal M3 listo para imprimir
+        return view('pedimentos.pdf', compact('pedimento'));
     }
 }
