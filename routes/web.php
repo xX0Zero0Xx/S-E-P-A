@@ -48,3 +48,6 @@ Route::middleware(['auth', 'verified', CheckRol::class . ':capturista'])->group(
     Route::get('/pedimentos/{id}', [PedimentoController::class, 'show'])->name('pedimentos.show');
     Route::get('/pedimentos/{id}/pdf', [PedimentoController::class, 'pdf'])->name('pedimentos.pdf');
 });
+
+Route::delete('/pedimentos/{pedimento}', [PedimentoController::class, 'destroy'])
+    ->name('pedimentos.destroy');

@@ -15,7 +15,19 @@ class PedimentoController extends Controller
     {
         $this->calculoService = $calculoService;
     }
+    //BOTON PARA BORRAR PEDIMENTO
+    public function destroy(Pedimento $pedimento)
+{
+    if ($pedimento->user_id != Auth::id()) {
+        abort(403);
+    }
 
+    $pedimento->delete();
+
+    return redirect()
+        ->route('pedimentos.index')
+        ->with('success', 'Pedimento eliminado correctamente.');
+}
     /**
      * Almacena un nuevo pedimento en la base de datos calculando impuestos automáticamente.
      */
@@ -180,4 +192,4 @@ class PedimentoController extends Controller
         // Vista perrona de pedimento en formato aduanal M3 listo para imprimir
         return view('pedimentos.pdf', compact('pedimento'));
     }
-}
+    }

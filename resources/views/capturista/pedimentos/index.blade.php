@@ -15,7 +15,7 @@
                 <span class="text-xl font-bold tracking-wide">S.E.P.A.</span>
                 <span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-semibold uppercase">Capturista</span>
             </div>
-            
+
             <div class="flex items-center space-x-4">
                 <a href="{{ route('captura') }}" class="px-3 py-1.5 text-xs font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg transition shadow-sm">
                     + Capturar Pedimento
@@ -35,7 +35,7 @@
 
     <!-- Contenido Principal -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-6">
-        
+
         @if(session('success'))
             <div class="bg-green-500/20 border border-green-500 text-green-200 p-4 rounded-xl backdrop-blur-md shadow-lg flex justify-between items-center">
                 <span>{{ session('success') }}</span>
@@ -101,7 +101,7 @@
                                     ${{ number_format($pedimento->valor_aduana ?? 0, 2) }} MXN
                                 </td>
                                 <td class="p-4">
-                                    <span class="px-2.5 py-1 text-xs font-semibold rounded-full 
+                                    <span class="px-2.5 py-1 text-xs font-semibold rounded-full
                                         @if(($pedimento->estatus_simulacion ?? 'Borrador') === 'Borrador') bg-yellow-100 text-yellow-800
                                         @elseif($pedimento->estatus_simulacion === 'Validado') bg-blue-100 text-blue-800
                                         @elseif($pedimento->estatus_simulacion === 'Pagado') bg-green-100 text-green-800
@@ -109,14 +109,45 @@
                                         {{ $pedimento->estatus_simulacion ?? 'Borrador' }}
                                     </span>
                                 </td>
-                                <td class="p-4 text-center space-x-2">
-                                    <a href="{{ route('pedimentos.show', $pedimento->id) }}" class="inline-block px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-800 text-white font-medium rounded-lg shadow-sm transition">
-                                        Ver
-                                    </a>
-                                    <a href="{{ route('pedimentos.pdf', $pedimento->id) }}" target="_blank" class="inline-block px-3 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm transition">
-                                        PDF Imprimir
-                                    </a>
-                                </td>
+                            <td class="p-4">
+    <div class="flex justify-center items-center gap-2">
+
+        <a href="{{ route('pedimentos.show', $pedimento->id) }}"
+        class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-slate-700 hover:bg-slate-800 rounded-lg shadow transition">
+            Ver
+        </a>
+
+        <a href="{{ route('pedimentos.pdf', $pedimento->id) }}"
+        target="_blank"
+        class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition">
+            PDF
+        </a>
+
+        <form id="formEliminar{{ $pedimento->id }}"
+    action="{{ route('pedimentos.destroy', $pedimento->id) }}"
+    method="POST"
+    class="inline">
+
+    @csrf
+    @method('DELETE')
+
+    <button
+    type="button"
+    data-id="{{ $pedimento->id }}"
+    data-numero="{{ $pedimento->numero_pedimento }}"
+    data-importador="{{ $pedimento->razon_social ?? 'N/A' }}"
+    data-valor="{{ number_format($pedimento->valor_aduana ?? 0, 2) }}"
+    onclick="abrirModalEliminar(this)"
+    class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow transition">
+
+    Eliminar
+
+</button>
+
+</form>
+
+    </div>
+</td>
                             </tr>
                         @empty
                             <tr>
@@ -141,5 +172,140 @@
     <footer class="bg-slate-900/80 backdrop-blur-md text-gray-400 py-4 text-center text-sm border-t border-slate-800 relative z-10">
         <p>&copy; {{ date('Y') }} S-E-P-A - Módulo de Capturista.</p>
     </footer>
+    <!-- Modal Eliminar -->
+<div id="modalEliminar"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+
+        <!-- Encabezado -->
+        <div class="bg-red-600 text-white px-6 py-4">
+
+            <h2 class="text-xl font-bold">
+                Confirmar eliminación
+            </h2>
+
+        </div>
+
+        <!-- Contenido -->
+        <div class="p-6">
+
+            <p class="text-gray-700 mb-5">
+                Vas a eliminar el siguiente pedimento.
+            </p>
+
+            <div class="bg-gray-100 rounded-xl p-4 space-y-3">
+
+                <div>
+                    <span class="font-semibold text-gray-700">
+                        Número:
+                    </span>
+
+                    <div id="modalNumero"
+                        class="text-blue-700 font-bold">
+                    </div>
+                </div>
+
+                <div>
+                    <span class="font-semibold text-gray-700">
+                        Importador:
+                    </span>
+
+                    <div id="modalImportador">
+                    </div>
+                </div>
+
+                <div>
+                    <span class="font-semibold text-gray-700">
+                        Valor en Aduana:
+                    </span>
+
+                    <div id="modalValor"
+                        class="font-semibold text-green-700">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-3">
+
+                <p class="text-red-700 text-sm">
+
+                    Esta acción eliminará permanentemente el pedimento y no podrá recuperarse.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- Botones -->
+        <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+
+            <button
+                type="button"
+                onclick="cerrarModalEliminar()"
+                class="px-5 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 transition">
+
+                Cancelar
+
+            </button>
+
+            <button
+                type="button"
+                onclick="enviarEliminar()"
+                class="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition">
+
+                Eliminar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+let formularioEliminar = null;
+
+function abrirModalEliminar(id, numero, importador, valor){
+
+    formularioEliminar = document.getElementById('formEliminar'+id);
+
+    document.getElementById('modalNumero').textContent = numero;
+
+    document.getElementById('modalImportador').textContent = importador;
+
+    document.getElementById('modalValor').textContent = "$"+valor+" MXN";
+
+    document.getElementById('modalEliminar').classList.remove('hidden');
+
+    document.getElementById('modalEliminar').classList.add('flex');
+
+}
+
+function cerrarModalEliminar(){
+
+    document.getElementById('modalEliminar').classList.add('hidden');
+
+    document.getElementById('modalEliminar').classList.remove('flex');
+
+}
+
+function enviarEliminar(){
+
+    if(formularioEliminar){
+
+        formularioEliminar.submit();
+
+    }
+
+}
+
+</script>
 </body>
 </html>
