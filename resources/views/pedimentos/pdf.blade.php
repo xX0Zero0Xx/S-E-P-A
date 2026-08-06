@@ -147,7 +147,6 @@
             <tr>
                 <td><strong>PROVEEDOR:</strong> {{ $pedimento->proveedor ?? 'N/A' }}</td>
                 <td><strong>FACTURA:</strong> {{ $pedimento->numero_factura ?? 'N/A' }}</td>
-                <td><strong>PAÍS:</strong> {{ $pedimento->pais_proveedor ?? 'N/A' }}</td>
             </tr>
         </table>
 

@@ -159,7 +159,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">País</label>
-                            <input type="text" name="pais" maxlength="100" placeholder="México" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
+                            <input type="text" name="pais_proveedor" maxlength="100" placeholder="México" class="w-full rounded-xl border-gray-300 text-sm p-3 border">
                         </div>
                     </div>
 
