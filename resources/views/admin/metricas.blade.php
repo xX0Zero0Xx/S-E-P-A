@@ -83,28 +83,48 @@
             <span class="text-[11px] text-slate-400 font-normal">Aduanas Registradas</span>
         </h3>
 
-        <div class="space-y-3">
-            @forelse($pedimentosPorAduana as $aduana)
-                @php
-                    $cantAduana = (int) ($aduana->total ?? 0);
-                    $porcentaje = ($totalPedimentos > 0) ? round(($cantAduana / $totalPedimentos) * 100) : 0;
-                    $anchoAduana = "width: {$porcentaje}%;";
-                @endphp
-                <div class="space-y-1 text-xs">
-                    <div class="flex justify-between text-slate-300 font-medium">
-                        <span>Aduana {{ $aduana->clave_aduana }} - {{ $aduana->denominacion_aduana ?? 'Sección Aduanera' }}</span>
-                        <span class="font-bold text-blue-400">{{ $cantAduana }} pedimentos ({{ $porcentaje }}%)</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" style="{{ $anchoAduana }}"></div>
-                    </div>
+       <div class="space-y-3">
+    @forelse($pedimentosPorAduana as $aduana)
+
+        @php
+            $cantAduana = (int) ($aduana->total ?? 0);
+            $porcentaje = $totalPedimentos > 0
+                ? round(($cantAduana / $totalPedimentos) * 100)
+                : 0;
+        @endphp
+
+        <div class="space-y-1 text-xs">
+
+            <div class="flex justify-between text-slate-300 font-medium">
+                <span>
+                    Aduana {{ $aduana->clave_aduana }} -
+                    {{ $aduana->denominacion_aduana ?? 'Sección Aduanera' }}
+                </span>
+
+                <span class="font-bold text-blue-400">
+                    {{ $cantAduana }} pedimentos ({{ $porcentaje }}%)
+                </span>
+            </div>
+
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+
+                <div
+                    class="h-full bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full"
+                    style="width: {{ $porcentaje . '%' }};">
                 </div>
-            @empty
-                <div class="text-center py-6 text-slate-500 text-xs italic">
-                    Sin registros de aduanas disponibles.
-                </div>
-            @endforelse
+
+            </div>
+
         </div>
+
+    @empty
+
+        <div class="text-center py-6 text-slate-500 text-xs italic">
+            Sin registros de aduanas disponibles.
+        </div>
+
+    @endforelse
+</div>
     </div>
 
     <!-- Distribución por Régimen -->
@@ -115,27 +135,47 @@
         </h3>
 
         <div class="space-y-3">
-            @forelse($pedimentosPorRegimen as $regimen)
-                @php
-                    $cantRegimen = (int) ($regimen->total ?? 0);
-                    $porcentajeRegimen = ($totalPedimentos > 0) ? round(($cantRegimen / $totalPedimentos) * 100) : 0;
-                    $anchoRegimen = "width: {$porcentajeRegimen}%;";
-                @endphp
-                <div class="space-y-1 text-xs">
-                    <div class="flex justify-between text-slate-300 font-medium">
-                        <span>{{ $regimen->clave_regimen }} - {{ $regimen->descripcion_regimen ?? 'Régimen Aduanero' }}</span>
-                        <span class="font-bold text-emerald-400">{{ $cantRegimen }} ({{ $porcentajeRegimen }}%)</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style="{{ $anchoRegimen }}"></div>
-                    </div>
+    @forelse($pedimentosPorRegimen as $regimen)
+
+        @php
+            $cantRegimen = (int) ($regimen->total ?? 0);
+            $porcentajeRegimen = $totalPedimentos > 0
+                ? round(($cantRegimen / $totalPedimentos) * 100)
+                : 0;
+        @endphp
+
+        <div class="space-y-1 text-xs">
+
+            <div class="flex justify-between text-slate-300 font-medium">
+                <span>
+                    {{ $regimen->clave_regimen }} -
+                    {{ $regimen->descripcion_regimen ?? 'Régimen Aduanero' }}
+                </span>
+
+                <span class="font-bold text-emerald-400">
+                    {{ $cantRegimen }} ({{ $porcentajeRegimen }}%)
+                </span>
+            </div>
+
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+
+                <div
+                    class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
+                    style="width: {{ $porcentajeRegimen . '%' }};">
                 </div>
-            @empty
-                <div class="text-center py-6 text-slate-500 text-xs italic">
-                    Sin registros de regímenes aún.
-                </div>
-            @endforelse
+
+            </div>
+
         </div>
+
+    @empty
+
+        <div class="text-center py-6 text-slate-500 text-xs italic">
+            Sin registros de regímenes aún.
+        </div>
+
+    @endforelse
+</div>
     </div>
 
 </div>
@@ -150,7 +190,7 @@
 
         <form action="{{ route('admin.metricas') }}" method="GET" class="flex items-center space-x-2 w-full sm:w-auto">
             <input type="text" name="buscar" value="{{ request('buscar') }}" placeholder="Pedimento, RFC o Razón Social..."
-                   class="bg-slate-800/90 text-white text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-500 w-full sm:w-64">
+                class="bg-slate-800/90 text-white text-xs rounded-xl px-3 py-2 border border-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-500 w-full sm:w-64">
             <button type="submit" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl border border-slate-700">Buscar</button>
             @if(request('buscar'))
                 <a href="{{ route('admin.metricas') }}" class="text-xs text-slate-400 hover:text-white px-2">Limpiar</a>
@@ -185,7 +225,7 @@
                             </span>
                         </td>
                         <td class="px-4 py-3 font-semibold text-emerald-400">${{ number_format($pedimento->valor_comercial ?? 0, 2) }}</td>
-                        <td class="px-4 py-3 text-slate-400">{{ $pedimento->user->name ?? 'Desconocido' }}</td>
+                        <td class="px-4 py-3 text-slate-400">{{ optional($pedimento->user)->name ?? 'Desconocido' }}</td>
                         <td class="px-4 py-3 text-center">
                             @php
                                 $estatus = strtolower($pedimento->estatus_simulacion ?? 'pagado');
