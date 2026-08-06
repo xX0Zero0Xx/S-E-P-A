@@ -1,48 +1,46 @@
 version: '3.8'
 
+networks:
+  sepa_network:
+    driver: bridge
+
+volumes:
+  db_data:
+
 services:
-  app:
+  # Contenedor de Base de Datos (Oculto al exterior)
+  db:
+    image: postgres:15-alpine # O mysql:8.0 según tu motor
+    container_name: sepa_db
+    restart: always
+    environment:
+      POSTGRES_DB: sepa_db
+      POSTGRES_USER: sepa_user
+      POSTGRES_PASSWORD: sepa_password_seguro
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - sepa_network
+    # NOTA: No declaramos 'ports', la DB solo es accesible dentro de 'sepa_network'
+
+  # Contenedor Apache2 + PHP (Servicio Web)
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel_app
-    restart: unless-stopped
-    volumes:
-      - .:/var/www/html
-    networks:
-      - laravel_network
-
-  webserver:
-    image: nginx:alpine
-    container_name: laravel_webserver
-    restart: unless-stopped
+    container_name: sepa_web
+    restart: always
     ports:
       - "8080:80"
     volumes:
       - .:/var/www/html
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    networks:
-      - laravel_network
-
-  db:
-    image: mysql:8.0
-    container_name: laravel_db
-    restart: unless-stopped
     environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_ROOT_PASSWORD: secret
-    ports:
-      - "3306:3306"
+      DB_HOST: db # Se conecta usando el nombre del servicio
+      DB_PORT: 5432
+      DB_DATABASE: sepa_db
+      DB_USERNAME: sepa_user
+      DB_PASSWORD: sepa_password_seguro
+    depends_on:
+      - db
     networks:
-      - laravel_network
-
-  redis:
-    image: redis:alpine
-    container_name: laravel_redis
-    restart: unless-stopped
-    networks:
-      - laravel_network
-
-networks:
-  laravel_network:
-    driver: bridge
+      - sepa_network
