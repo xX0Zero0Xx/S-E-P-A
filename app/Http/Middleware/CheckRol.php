@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CheckRol
 {
-    public function handle(Request $request, Closure $next, string $rol)
+    public function handle(Request $request, Closure $next, string ...$roles)
     {
-        if (!Auth::check() || Auth::user()->rol !== $rol) {
+        if (!Auth::check() || !in_array(Auth::user()->rol, $roles, true)) {
             abort(403, 'Acceso denegado a esta sección.');
         }
 

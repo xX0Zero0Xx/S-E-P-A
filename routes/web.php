@@ -16,10 +16,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+use App\Http\Controllers\AdminController;
+
 Route::middleware(['auth', CheckRol::class . ':administrador'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+    // Gestión de usuarios
+    Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
+    Route::post('/usuarios', [AdminController::class, 'storeUsuario'])->name('admin.usuarios.store');
+    Route::put('/usuarios/{id}', [AdminController::class, 'updateUsuario'])->name('admin.usuarios.update');
+    Route::delete('/usuarios/{id}', [AdminController::class, 'destroyUsuario'])->name('admin.usuarios.destroy');
+
+    // Métricas y Pedimentos Totales
+    Route::get('/metricas', [AdminController::class, 'metricas'])->name('admin.metricas');
+
+    // Auditoría y Seguridad
+    Route::get('/auditoria', [AdminController::class, 'auditoria'])->name('admin.auditoria');
 });
 
 Route::middleware(['auth', CheckRol::class . ':capturista'])->prefix('capturista')->group(function () {
@@ -43,7 +55,7 @@ Route::middleware(['auth', 'verified', CheckRol::class . ':capturista'])->group(
     Route::post('/pedimentos', [PedimentoController::class, 'store'])->name('pedimentos.store');
 });
 
-Route::middleware(['auth', 'verified', CheckRol::class . ':capturista'])->group(function () {
+Route::middleware(['auth', 'verified', CheckRol::class . ':capturista,administrador'])->group(function () {
     Route::get('/pedimentos', [PedimentoController::class, 'index'])->name('pedimentos.index');
     Route::get('/pedimentos/{id}', [PedimentoController::class, 'show'])->name('pedimentos.show');
     Route::get('/pedimentos/{id}/pdf', [PedimentoController::class, 'pdf'])->name('pedimentos.pdf');
