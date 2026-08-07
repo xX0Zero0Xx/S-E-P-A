@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 class Pedimento extends Model
 {
@@ -93,7 +95,12 @@ class Pedimento extends Model
     /**
      * Relación con el usuario capturista.
      */
-    public function user()
+    /**
+     * Relación con el usuario capturista.
+     *
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
