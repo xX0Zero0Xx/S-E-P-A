@@ -135,10 +135,10 @@ http://127.0.0.1:8000
 
 Esta opción levanta dos contenedores gestionados mediante Docker Compose:
 
-| Contenedor | Servicio | Descripción |
-|---|---|---|
-| `SEPA_DB` | MySQL 8.0 | Base de datos (oculta, sin puertos expuestos) |
-| `SEPA_web` | Apache2 + PHP 8.4 | Servidor web con Laravel |
+| Contenedor | Servicio          | Descripción                                   |
+| ---------- | ----------------- | --------------------------------------------- |
+| `SEPA_DB`  | MySQL 8.0         | Base de datos (oculta, sin puertos expuestos) |
+| `SEPA_web` | Apache2 + PHP 8.4 | Servidor web con Laravel                      |
 
 > **Nota de seguridad:** El contenedor `SEPA_DB` no expone puertos al exterior. Solo es accesible desde `SEPA_web` a través de la red interna de Docker (`sepa_network`).
 
