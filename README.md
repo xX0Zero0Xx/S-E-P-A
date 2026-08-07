@@ -60,30 +60,32 @@ Un pedimento aduanal es el documento oficial con el que una operación de import
 | M3 | Headers de seguridad: HSTS, X-Frame, X-Content-Type | ✅ (middleware `SecurityHeaders`) |
 | M3 | Rate limiting en login (máx 5 intentos/min) | ✅ (Fortify `RateLimiter`) |
 | M3 | Rate limiting en rutas API | ✅ (`throttle:api`) |
-| M4 | `docker-compose.yml` con servicios app y db | ✅ |
+| M4 | `docker-compose.yml` con app, nginx, db y redis | ✅ (`SEPA_web`, `SEPA_nginx`, `SEPA_DB`, `SEPA_redis`) |
 | M4 | La app levanta con `docker-compose up -d` sin errores | ✅ |
-| M4 | Dockerfile Multi-Stage (mínimo 2 stages) | ❌ Pendiente |
-| M4 | Imagen final basada en alpine o equivalente mínimo | ❌ Pendiente |
-| M4 | Contenedor ejecutándose como usuario no-root | ⚠️ Apache corre como `www-data` pero el proceso principal es root |
+| M4 | Dockerfile Multi-Stage (mínimo 2 stages) | ✅ (3 stages: `composer:2` → `node:20-alpine` → `php:8.4-fpm-alpine`) |
+| M4 | Imagen final basada en alpine o equivalente mínimo | ✅ (`php:8.4-fpm-alpine`) |
+| M4 | Contenedor ejecutándose como usuario no-root | ✅ (`USER www-data`) |
 | M4 | `.env` NO incluido en el repositorio Git | ✅ (en `.gitignore`) |
 | M4 | `.dockerignore` con archivos sensibles excluidos | ✅ |
-| M4 | Reporte de Trivy incluido en el repositorio | ❌ Pendiente |
+| M4 | Reporte de Trivy incluido en el repositorio | ✅ (`trivy-report.txt` — 0 HIGH/CRITICAL) |
 | M5 | Canal de auditoría en `config/logging.php` | ✅ (canal `audit` → `storage/logs/audit.log`) |
 | M5 | Login/logout registrados en el log de auditoría | ✅ |
 | M5 | GitHub Actions workflow presente en `.github/workflows/` | ✅ (`ci.yml`) |
 | M5 | PHPStan en el pipeline sin errores críticos | ✅ |
 | M5 | README con instrucciones de instalación y uso con Docker | ✅ |
 
-### Elementos pendientes / a mejorar
+### Reporte de seguridad — Trivy v0.73.0
 
-> [!IMPORTANT]
-> Los siguientes puntos requieren atención para completar la lista de cotejo:
+```
+Target: s-e-p-a_sepa_web:latest (alpine 3.24.1)    → 0 vulnerabilidades HIGH/CRITICAL ✅
+Target: vendor/composer/installed.json             → 0 vulnerabilidades HIGH/CRITICAL ✅
+```
 
-1. **Dockerfile Multi-Stage** — El `Dockerfile` actual tiene un solo stage. Se requiere separar en al menos 2 stages (builder + runtime) usando una imagen final `alpine`.
-2. **Imagen Alpine** — La imagen base actual es `php:8.4-apache`. Se debe migrar a una imagen más ligera como `php:8.4-fpm-alpine` en el stage final.
-3. **Contenedor non-root** — Se debe agregar `USER www-data` al final del `Dockerfile` para que el proceso de Apache no corra como root.
-4. **Reporte de Trivy** — Ejecutar `trivy image s-e-p-a_sepa_web` y guardar el reporte en el repositorio.
-5. **Tests Postman** — Verificar que cada endpoint tenga al menos 3 tests automatizados en la colección.
+> Reporte completo en [`trivy-report.txt`](./trivy-report.txt)
+
+### Elemento pendiente
+
+- **Tests Postman** — Verificar que cada endpoint tenga al menos 3 tests automatizados en la colección exportada.
 
 ---
 
