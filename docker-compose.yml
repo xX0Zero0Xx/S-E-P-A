@@ -9,38 +9,40 @@ volumes:
 
 services:
   # Contenedor de Base de Datos (Oculto al exterior)
-  db:
-    image: postgres:15-alpine # O mysql:8.0 según tu motor
-    container_name: sepa_db
+  sepa_db:
+    image: mysql:8.0
+    container_name: SEPA_DB
     restart: always
     environment:
-      POSTGRES_DB: sepa_db
-      POSTGRES_USER: sepa_user
-      POSTGRES_PASSWORD: sepa_password_seguro
+      MYSQL_DATABASE: sepa_db
+      MYSQL_USER: sepa_user
+      MYSQL_PASSWORD: sepa_password_seguro
+      MYSQL_ROOT_PASSWORD: sepa_root_password_seguro
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/mysql
     networks:
       - sepa_network
-    # NOTA: No declaramos 'ports', la DB solo es accesible dentro de 'sepa_network'
+    # NOTA: No declaramos 'ports' para que la DB esté oculta al exterior y sea accesible solo desde la red interna de docker
 
   # Contenedor Apache2 + PHP (Servicio Web)
-  web:
+  sepa_web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: sepa_web
+    container_name: SEPA_web
     restart: always
     ports:
       - "8080:80"
     volumes:
       - .:/var/www/html
     environment:
-      DB_HOST: db # Se conecta usando el nombre del servicio
-      DB_PORT: 5432
+      DB_CONNECTION: mysql
+      DB_HOST: SEPA_DB # Se conecta usando el nombre del contenedor/servicio en la red
+      DB_PORT: 3306
       DB_DATABASE: sepa_db
       DB_USERNAME: sepa_user
       DB_PASSWORD: sepa_password_seguro
     depends_on:
-      - db
+      - sepa_db
     networks:
       - sepa_network

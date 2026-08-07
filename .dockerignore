@@ -4,4 +4,7 @@
 vendor
 node_modules
 storage/*.key
-# Zi
+.dockerignore
+Dockerfile
+docker-compose.yml
+README.md
