@@ -59,6 +59,7 @@ Route::middleware(['auth', 'verified', CheckRol::class . ':capturista,administra
     Route::get('/pedimentos', [PedimentoController::class, 'index'])->name('pedimentos.index');
     Route::get('/pedimentos/{id}', [PedimentoController::class, 'show'])->name('pedimentos.show');
     Route::get('/pedimentos/{id}/pdf', [PedimentoController::class, 'pdf'])->name('pedimentos.pdf');
+    Route::delete('/pedimentos/{pedimento}', [PedimentoController::class, 'destroy'])->name('pedimentos.destroy');
 });
 
 Route::delete('/pedimentos/{pedimento}', [PedimentoController::class, 'destroy'])

@@ -1,0 +1,407 @@
+{
+	"info": {
+		"_postman_id": "sepa-api-collection-8deg",
+		"name": "S.E.P.A. API REST Collection",
+		"description": "Colección de pruebas de integración para los endpoints API RESTful del simulador SEPA (Módulo 2).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Autenticación (Login API - Sanctum Token)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code es 200 OK', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('Respuesta contiene token de acceso Sanctum', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('access_token');",
+							"    pm.expect(jsonData.token_type).to.eql('Bearer');",
+							"    pm.environment.set('bearer_token', jsonData.access_token);",
+							"});",
+							"pm.test('Tiempo de respuesta menor a 500ms', function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"login\": \"admin@sepa.com\",\n  \"password\": \"password123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			}
+		},
+		{
+			"name": "2. Listar Pedimentos (GET)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code es 200 OK', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('Respuesta contiene estructura paginada de pedimentos', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql('success');",
+							"    pm.expect(jsonData).to.have.property('data');",
+							"});",
+							"pm.test('Header de respuesta contiene JSON', function () {",
+							"    pm.response.to.have.header('Content-Type');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearer_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/pedimentos",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pedimentos"
+					]
+				}
+			}
+		},
+		{
+			"name": "3. Crear Nuevo Pedimento (POST)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code es 201 Created', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test('Pedimento fue registrado exitosamente con ID', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data).to.have.property('id');",
+							"    pm.expect(jsonData.data.numero_pedimento).to.eql('240099999');",
+							"    pm.environment.set('pedimento_id', jsonData.data.id);",
+							"});",
+							"pm.test('Calculo automático de contribuciones ejecutado', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data).to.have.property('total_general');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearer_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"numero_pedimento\": \"240099999\",\n  \"clave_aduana\": \"240\",\n  \"clave_regimen\": \"IMD\",\n  \"rfc_importador\": \"XAXX010101000\",\n  \"razon_social\": \"Empresa Importadora S.A. de C.V.\",\n  \"valor_comercial\": 1500.00,\n  \"moneda\": \"USD\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/pedimentos",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pedimentos"
+					]
+				}
+			}
+		},
+		{
+			"name": "4. Ver Detalle de Pedimento (GET por ID)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code es 200 OK', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('Devuelve el pedimento consultado', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.numero_pedimento).to.eql('240099999');",
+							"});",
+							"pm.test('Estructura de respuesta correcta', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql('success');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearer_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/pedimentos/{{pedimento_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pedimentos",
+						"{{pedimento_id}}"
+					]
+				}
+			}
+		},
+		{
+			"name": "5. Actualizar Pedimento (PUT)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code es 200 OK', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('Razón social fue actualizada', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.razon_social).to.eql('Empresa Importadora Actualizada S.A.');",
+							"});",
+							"pm.test('Respuesta confirmando actualización', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.contain('actualizado');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearer_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"razon_social\": \"Empresa Importadora Actualizada S.A.\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/pedimentos/{{pedimento_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pedimentos",
+						"{{pedimento_id}}"
+					]
+				}
+			}
+		},
+		{
+			"name": "6. Eliminar Pedimento (DELETE)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code es 200 OK', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('Mensaje de eliminación exitosa', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.contain('eliminado');",
+							"});",
+							"pm.test('Estructura de respuesta válida', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql('success');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearer_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/pedimentos/{{pedimento_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pedimentos",
+						"{{pedimento_id}}"
+					]
+				}
+			}
+		},
+		{
+			"name": "7. Logout API - Revocar Token (POST)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code es 200 OK', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('Token revocado exitosamente', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.contain('revocado');",
+							"});",
+							"pm.test('Header de respuesta es JSON', function () {",
+							"    pm.response.to.have.header('Content-Type');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearer_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/logout",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"logout"
+					]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		}
+	]
+}

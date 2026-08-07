@@ -39,8 +39,8 @@ class AdminController extends Controller
             $busqueda = (string) $request->input('buscar');
             $query->where(function ($q) use ($busqueda) {
                 $q->where('name', 'like', "%{$busqueda}%")
-                  ->orWhere('email', 'like', "%{$busqueda}%")
-                  ->orWhere('username', 'like', "%{$busqueda}%");
+                ->orWhere('email', 'like', "%{$busqueda}%")
+                ->orWhere('username', 'like', "%{$busqueda}%");
             });
         }
 
@@ -144,8 +144,8 @@ class AdminController extends Controller
             $busqueda = (string) $request->input('buscar');
             $query->where(function ($q) use ($busqueda) {
                 $q->where('numero_pedimento', 'like', "%{$busqueda}%")
-                  ->orWhere('razon_social', 'like', "%{$busqueda}%")
-                  ->orWhere('rfc_importador', 'like', "%{$busqueda}%");
+                ->orWhere('razon_social', 'like', "%{$busqueda}%")
+                ->orWhere('rfc_importador', 'like', "%{$busqueda}%");
             });
         }
 
@@ -171,70 +171,67 @@ class AdminController extends Controller
      */
     public function auditoria(Request $request)
     {
-        $userName = Auth::user() ? Auth::user()->name : 'Administrador';
+        $logPath = storage_path('logs/audit.log');
+        $logsReal = collect();
 
-        // Datos estructurados de auditoría para demostración
-        $logsEstaticos = collect([
-            [
-                'id' => 1,
-                'usuario' => $userName,
-                'rol' => 'administrador',
-                'evento' => 'Inicio de Sesión',
-                'descripcion' => 'Autenticación exitosa en el panel administrativo',
-                'ip' => '127.0.0.1',
-                'nivel' => 'info',
-                'fecha' => now()->subMinutes(12)->format('d/m/Y H:i:s'),
-            ],
-            [
-                'id' => 2,
-                'usuario' => 'Juan Capturista',
-                'rol' => 'capturista',
-                'evento' => 'Creación de Pedimento',
-                'descripcion' => 'Registro de pedimento #240019283 en Aduana 240',
-                'ip' => '192.168.1.45',
-                'nivel' => 'exito',
-                'fecha' => now()->subHours(1)->format('d/m/Y H:i:s'),
-            ],
-            [
-                'id' => 3,
-                'usuario' => 'Sistema SEPA',
-                'rol' => 'sistema',
-                'evento' => 'Modificación de Usuario',
-                'descripcion' => 'Actualización de rol para el usuario carla_admon',
-                'ip' => '127.0.0.1',
-                'nivel' => 'advertencia',
-                'fecha' => now()->subHours(3)->format('d/m/Y H:i:s'),
-            ],
-            [
-                'id' => 4,
-                'usuario' => 'Desconocido',
-                'rol' => 'invitado',
-                'evento' => 'Intento Fallido de Login',
-                'descripcion' => 'Contraseña incorrecta para usuario admin_test',
-                'ip' => '189.210.44.12',
-                'nivel' => 'critico',
-                'fecha' => now()->subHours(5)->format('d/m/Y H:i:s'),
-            ],
-            [
-                'id' => 5,
-                'usuario' => 'Maria Lopez',
-                'rol' => 'capturista',
-                'evento' => 'Eliminación de Borrador',
-                'descripcion' => 'Se eliminó el borrador de pedimento #240019280',
-                'ip' => '192.168.1.50',
-                'nivel' => 'advertencia',
-                'fecha' => now()->subDay()->format('d/m/Y H:i:s'),
-            ],
-        ]);
+        if (file_exists($logPath)) {
+            $lines = file($logPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $idCounter = 1;
+
+            foreach (array_reverse($lines) as $line) {
+                // Parsear formato básico del log de laravel: [2026-08-06 20:52:21] local.INFO: mensaje {json}
+                if (preg_match('/^\[(.*?)\]\s+(\w+)\.(\w+):\s+([^\{]+)\s*(\{.*\})?/', $line, $matches)) {
+                    $fecha = $matches[1];
+                    $nivelStr = strtolower($matches[3]); // info, warning, error, etc.
+                    $evento = trim($matches[4]);
+                    $contextData = isset($matches[5]) ? json_decode($matches[5], true) : [];
+
+                    $nivelMap = [
+                        'info'    => 'info',
+                        'notice'  => 'info',
+                        'warning' => 'advertencia',
+                        'error'   => 'critico',
+                    ];
+
+                    $logsReal->push([
+                        'id'          => $idCounter++,
+                        'usuario'     => $contextData['email'] ?? ($contextData['user_id'] ?? 'Sistema/Guest'),
+                        'rol'         => $contextData['rol'] ?? 'N/A',
+                        'evento'      => $evento,
+                        'descripcion' => json_encode($contextData, JSON_UNESCAPED_UNICODE),
+                        'ip'          => $contextData['ip'] ?? 'N/A',
+                        'nivel'       => $nivelMap[$nivelStr] ?? 'info',
+                        'fecha'       => $fecha,
+                    ]);
+                }
+            }
+        }
+
+        // Si aún no hay logs en el archivo, mostrar ejemplos de fallback
+        if ($logsReal->isEmpty()) {
+            $userName = Auth::user() ? Auth::user()->name : 'Administrador';
+            $logsReal = collect([
+                [
+                    'id' => 1,
+                    'usuario' => $userName,
+                    'rol' => 'administrador',
+                    'evento' => 'Inicio de Sesión',
+                    'descripcion' => 'Autenticación exitosa en el panel administrativo',
+                    'ip' => '127.0.0.1',
+                    'nivel' => 'info',
+                    'fecha' => now()->format('d/m/Y H:i:s'),
+                ],
+            ]);
+        }
 
         if ($request->filled('nivel')) {
             $nivelFilter = $request->input('nivel');
-            $logsEstaticos = $logsEstaticos->where('nivel', $nivelFilter);
+            $logsReal = $logsReal->where('nivel', $nivelFilter);
         }
 
         if ($request->filled('buscar')) {
             $b = strtolower((string) $request->input('buscar'));
-            $logsEstaticos = $logsEstaticos->filter(function ($item) use ($b) {
+            $logsReal = $logsReal->filter(function ($item) use ($b) {
                 return str_contains(strtolower($item['usuario']), $b) ||
                     str_contains(strtolower($item['evento']), $b) ||
                     str_contains(strtolower($item['descripcion']), $b) ||
@@ -242,6 +239,7 @@ class AdminController extends Controller
             });
         }
 
-        return view('admin.auditoria', ['logs' => $logsEstaticos]);
+        return view('admin.auditoria', ['logs' => $logsReal]);
     }
+
 }

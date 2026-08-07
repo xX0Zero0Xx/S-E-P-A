@@ -30,6 +30,13 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
+        \Illuminate\Support\Facades\Log::channel('audit')->info('Inicio de sesión web exitoso', [
+            'user_id' => $user->id,
+            'email'   => $user->email,
+            'rol'     => $user->rol,
+            'ip'      => $request->ip(),
+        ]);
+
         if ($user && $user->rol === 'administrador') {
             return redirect()->intended(route('admin.dashboard', absolute: false));
         }
@@ -42,6 +49,16 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+
+        if ($user) {
+            \Illuminate\Support\Facades\Log::channel('audit')->info('Cierre de sesión web', [
+                'user_id' => $user->id,
+                'email'   => $user->email,
+                'ip'      => $request->ip(),
+            ]);
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
@@ -50,4 +67,5 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
 }
