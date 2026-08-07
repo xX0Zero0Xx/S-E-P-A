@@ -122,7 +122,7 @@
                 <td colspan="4"><strong>DOMICILIO:</strong> {{ $pedimento->domicilio ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td colspan="4"><strong>PAIS:</strong> {{ $pedimento->pais ?? 'N/A' }}</td>
+                <td colspan="4"><strong>PAIS:</strong> {{ $pedimento->pais_proveedor ?? 'N/A' }}</td>
             </tr>
         </table>
 

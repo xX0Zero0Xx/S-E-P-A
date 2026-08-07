@@ -272,26 +272,26 @@
 
 let formularioEliminar = null;
 
-function abrirModalEliminar(id, numero, importador, valor){
+function abrirModalEliminar(boton){
 
-    formularioEliminar = document.getElementById('formEliminar'+id);
+    const id = boton.dataset.id;
+    const numero = boton.dataset.numero;
+    const importador = boton.dataset.importador;
+    const valor = boton.dataset.valor;
+
+    formularioEliminar = document.getElementById('formEliminar' + id);
 
     document.getElementById('modalNumero').textContent = numero;
-
     document.getElementById('modalImportador').textContent = importador;
-
-    document.getElementById('modalValor').textContent = "$"+valor+" MXN";
+    document.getElementById('modalValor').textContent = '$' + valor + ' MXN';
 
     document.getElementById('modalEliminar').classList.remove('hidden');
-
     document.getElementById('modalEliminar').classList.add('flex');
-
 }
 
 function cerrarModalEliminar(){
 
     document.getElementById('modalEliminar').classList.add('hidden');
-
     document.getElementById('modalEliminar').classList.remove('flex');
 
 }
@@ -299,9 +299,7 @@ function cerrarModalEliminar(){
 function enviarEliminar(){
 
     if(formularioEliminar){
-
         formularioEliminar.submit();
-
     }
 
 }
