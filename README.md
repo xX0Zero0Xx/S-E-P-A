@@ -27,10 +27,63 @@ Un pedimento aduanal es el documento oficial con el que una operación de import
 
 - PHP 8.4
 - Laravel 12
-- MySQL
-- Node.js
+- MySQL 8.0
+- Node.js y npm
 - Composer
 - Docker & Docker Compose
+- Laravel Fortify (autenticación, 2FA)
+- Laravel Sanctum (API tokens)
+
+---
+
+## Lista de Cotejo — Estado del Proyecto
+
+| Mód. | Elemento Verificable | Estado |
+|------|----------------------|--------|
+| M1 | Sistema de registro de usuarios funcional con validación de campos | ✅ |
+| M1 | Login con email y contraseña, redirección post-autenticación | ✅ |
+| M1 | Middleware `auth` aplicado a todas las rutas protegidas | ✅ |
+| M1 | API con autenticación Bearer Token (Sanctum) funcionando | ✅ |
+| M1 | Endpoint `/api/login` devuelve token válido | ✅ |
+| M1 | Endpoint `/api/logout` revoca el token correctamente | ✅ |
+| M1 | 2FA activo: activación, QR escaneable, challenge funcional | ✅ |
+| M2 | Rutas RESTful con los 5 verbos HTTP correctos | ✅ |
+| M2 | Respuestas JSON con códigos de estado HTTP apropiados | ✅ |
+| M2 | Validaciones con Form Request o `$request->validate()` | ✅ |
+| M2 | Colección Postman exportada en el repositorio | ✅ |
+| M2 | Tests automatizados en Postman (mínimo 3 por endpoint) | ⚠️ Pendiente verificar |
+| M3 | `@csrf` presente en todos los formularios POST | ✅ |
+| M3 | Salidas de datos con `{{ }}` en Blade (no `{!! !!}`) | ✅ |
+| M3 | Consultas DB solo con Eloquent / Query Builder | ✅ |
+| M3 | `$fillable` definido en todos los modelos | ✅ |
+| M3 | HTTPS configurado con certificado válido | ⚠️ Solo en producción (HSTS activo al detectar HTTPS) |
+| M3 | Headers de seguridad: HSTS, X-Frame, X-Content-Type | ✅ (middleware `SecurityHeaders`) |
+| M3 | Rate limiting en login (máx 5 intentos/min) | ✅ (Fortify `RateLimiter`) |
+| M3 | Rate limiting en rutas API | ✅ (`throttle:api`) |
+| M4 | `docker-compose.yml` con servicios app y db | ✅ |
+| M4 | La app levanta con `docker-compose up -d` sin errores | ✅ |
+| M4 | Dockerfile Multi-Stage (mínimo 2 stages) | ❌ Pendiente |
+| M4 | Imagen final basada en alpine o equivalente mínimo | ❌ Pendiente |
+| M4 | Contenedor ejecutándose como usuario no-root | ⚠️ Apache corre como `www-data` pero el proceso principal es root |
+| M4 | `.env` NO incluido en el repositorio Git | ✅ (en `.gitignore`) |
+| M4 | `.dockerignore` con archivos sensibles excluidos | ✅ |
+| M4 | Reporte de Trivy incluido en el repositorio | ❌ Pendiente |
+| M5 | Canal de auditoría en `config/logging.php` | ✅ (canal `audit` → `storage/logs/audit.log`) |
+| M5 | Login/logout registrados en el log de auditoría | ✅ |
+| M5 | GitHub Actions workflow presente en `.github/workflows/` | ✅ (`ci.yml`) |
+| M5 | PHPStan en el pipeline sin errores críticos | ✅ |
+| M5 | README con instrucciones de instalación y uso con Docker | ✅ |
+
+### Elementos pendientes / a mejorar
+
+> [!IMPORTANT]
+> Los siguientes puntos requieren atención para completar la lista de cotejo:
+
+1. **Dockerfile Multi-Stage** — El `Dockerfile` actual tiene un solo stage. Se requiere separar en al menos 2 stages (builder + runtime) usando una imagen final `alpine`.
+2. **Imagen Alpine** — La imagen base actual es `php:8.4-apache`. Se debe migrar a una imagen más ligera como `php:8.4-fpm-alpine` en el stage final.
+3. **Contenedor non-root** — Se debe agregar `USER www-data` al final del `Dockerfile` para que el proceso de Apache no corra como root.
+4. **Reporte de Trivy** — Ejecutar `trivy image s-e-p-a_sepa_web` y guardar el reporte en el repositorio.
+5. **Tests Postman** — Verificar que cada endpoint tenga al menos 3 tests automatizados en la colección.
 
 ---
 
@@ -135,10 +188,10 @@ http://127.0.0.1:8000
 
 Esta opción levanta dos contenedores gestionados mediante Docker Compose:
 
-| Contenedor | Servicio          | Descripción                                   |
-| ---------- | ----------------- | --------------------------------------------- |
-| `SEPA_DB`  | MySQL 8.0         | Base de datos (oculta, sin puertos expuestos) |
-| `SEPA_web` | Apache2 + PHP 8.4 | Servidor web con Laravel                      |
+| Contenedor | Servicio | Descripción |
+|---|---|---|
+| `SEPA_DB` | MySQL 8.0 | Base de datos (oculta, sin puertos expuestos) |
+| `SEPA_web` | Apache2 + PHP 8.4 | Servidor web con Laravel |
 
 > **Nota de seguridad:** El contenedor `SEPA_DB` no expone puertos al exterior. Solo es accesible desde `SEPA_web` a través de la red interna de Docker (`sepa_network`).
 
@@ -171,7 +224,7 @@ DB_USERNAME=sepa_user
 DB_PASSWORD=sepa_password_seguro
 ```
 
-> **Importante:** El valor de `DB_HOST` debe ser `SEPA_DB` (el nombre del contenedor de base de datos dentro de la red Docker), no `127.0.0.1`.
+> **Importante:** El valor de `DB_HOST` debe ser `SEPA_DB` (nombre del contenedor dentro de la red Docker), no `127.0.0.1`.
 
 ### 3. Construir e iniciar los contenedores
 
@@ -193,9 +246,9 @@ SEPA_web   s-e-p-a_sepa_web   Up             0.0.0.0:8080->80/tcp
 SEPA_DB    mysql:8.0          Up             3306/tcp (solo interno)
 ```
 
-### 4. Configurar permisos de almacenamiento (Evitar error de compilación de Blade/tempnam)
+### 4. Configurar permisos de almacenamiento
 
-Si obtienes errores relacionados con la escritura de vistas compiladas de Blade o archivos temporales (`tempnam()`), ejecuta:
+Si obtienes errores de compilación de Blade o archivos temporales (`tempnam()`), ejecuta:
 
 ```bash
 docker exec -it SEPA_web bash -c "mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions && chmod -R 775 storage bootstrap/cache && chown -R www-data:www-data storage bootstrap/cache && php artisan view:clear"
