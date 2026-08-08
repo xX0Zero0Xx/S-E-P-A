@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Panel de Control General')
+@section('title', 'SEPA | Panel de Control')
 
 @section('content')
 <!-- Tarjeta de Bienvenida -->

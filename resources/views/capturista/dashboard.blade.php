@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEPA | Dashboard</title>
+    <title>SEPA</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-sans text-gray-800 flex flex-col min-h-screen relative bg-slate-900">

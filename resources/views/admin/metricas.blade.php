@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Métricas y Pedimentos Totales')
+@section('title', 'SEPA | Panel de Control')
 
 @section('content')
 <!-- Encabezado -->

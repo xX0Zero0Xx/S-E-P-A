@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Gestión de Usuarios')
+@section('title', 'SEPA | Panel de Control')
 
 @section('content')
 <!-- Titulo y Botón Crear -->

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEPA | Mis Pedimentos</title>
+    <title>SEPA</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-sans text-gray-800 flex flex-col min-h-screen relative bg-slate-900">
@@ -21,7 +21,7 @@
                     + Capturar Pedimento
                 </a>
                 <a href="{{ route('capturista.dashboard') }}" class="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-sm">
-                    Dashboard
+                    Volver al Inicio
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
